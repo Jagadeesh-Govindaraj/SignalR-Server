@@ -17,6 +17,8 @@ namespace Microsoft.AspNetCore.SignalR.Transports
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "The disposer is an optimization")]
     public abstract class ForeverTransport : TransportDisconnectBase, ITransport
     {
+        protected static readonly string FormContentType = "application/x-www-form-urlencoded";
+
         private static readonly ProtocolResolver _protocolResolver = new ProtocolResolver();
 
         private readonly IPerformanceCounterManager _counters;
@@ -49,6 +51,15 @@ namespace Microsoft.AspNetCore.SignalR.Transports
         protected JsonSerializer JsonSerializer
         {
             get { return _jsonSerializer; }
+        }
+
+        protected void EnsureFormContentType()
+        {
+            // Managed SignalR 2.x clients don't set content type which prevents from parsing the body as a form
+            if (string.IsNullOrEmpty(Context.Request.ContentType))
+            {
+                Context.Request.ContentType = FormContentType;
+            }
         }
 
         protected virtual void OnSending(string payload)
@@ -84,6 +95,8 @@ namespace Microsoft.AspNetCore.SignalR.Transports
 
         protected async Task ProcessRequestCore(ITransportConnection connection)
         {
+            EnsureFormContentType();
+
             Connection = connection;
 
             if (IsSendRequest)
@@ -152,7 +165,7 @@ namespace Microsoft.AspNetCore.SignalR.Transports
             {
                 if (_protocolResolver.SupportsDelayedStart(Context.Request))
                 {
-                    // TODO: Ensure delegate continues to use the C# Compiler static delegate caching optimization. 
+                    // TODO: Ensure delegate continues to use the C# Compiler static delegate caching optimization.
                     initialize = () => connection.Initialize(ConnectionId);
                 }
                 else

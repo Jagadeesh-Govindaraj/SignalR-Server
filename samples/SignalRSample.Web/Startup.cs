@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,6 @@ namespace SignalRSample.Web
         {
             loggerFactory.AddConsole(LogLevel.Debug);
 
-            app.UseIISPlatformHandler();
             app.UseFileServer();
 
             app.UseWebSockets();
@@ -30,9 +30,9 @@ namespace SignalRSample.Web
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseServer("Microsoft.AspNetCore.Server.Kestrel")
-                .UseDefaultConfiguration(args)
-                .UseIISPlatformHandlerUrl()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 
@@ -40,3 +40,4 @@ namespace SignalRSample.Web
         }
     }
 }
+

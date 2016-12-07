@@ -1,31 +1,35 @@
 {
-  "version": "0.1.0-*",
+  "version": "0.2.0-*",
   "description": "Core server components for ASP.NET SignalR.",
   "dependencies": {
-    "Microsoft.AspNetCore.SignalR.Sources": {
-      "version": "0.1.0-*",
-      "type": "build"
+    "Microsoft.AspNetCore.DataProtection": "1.2.0-*",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.2.0-*",
+    "Microsoft.AspNetCore.Http.Extensions": "1.2.0-*",
+    "Microsoft.AspNetCore.SignalR.Messaging": {
+      "target": "project"
     },
-    "Microsoft.AspNetCore.SignalR.Messaging": "0.1.0-*",
-    "Microsoft.AspNetCore.DataProtection": "1.0.0-*",
-    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0-*",
-    "Microsoft.AspNetCore.Http.Extensions": "1.0.0-*",
-    "Microsoft.Extensions.DependencyModel": "1.0.0-*",
-    "Newtonsoft.Json": "8.0.2"
+    "Microsoft.AspNetCore.SignalR.Sources": {
+      "type": "build",
+      "target": "project"
+    },
+    "Microsoft.Extensions.DependencyModel": "1.1.0-*",
+    "NETStandard.Library": "1.6.1-*",
+    "Newtonsoft.Json": "9.0.1"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "warningsAsErrors": true,
     "allowUnsafe": true,
-    "keyFile": "../../tools/Key.snk"
+    "keyFile": "../../tools/Key.snk",
+    "embed": {
+      "include": "Scripts/**/*.*"
+    }
   },
-  "resource": "Scripts/**/*.*",
   "frameworks": {
     "net451": {},
-    "netstandard1.3": {
-      "imports": [
-        "dotnet5.4",
-        "portable-net451+win8"
-      ]
+    "netstandard1.6": {
+      "dependencies": {
+        "System.Runtime.Serialization.Primitives": "4.3.0-*"
+      }
     }
   }
 }

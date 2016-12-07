@@ -174,9 +174,6 @@
   <data name="Error_InvalidCursorFormat" xml:space="preserve">
     <value>Invalid cursor.</value>
   </data>
-  <data name="Error_InvalidForeverFrameId" xml:space="preserve">
-    <value>The supplied frameId is in the incorrect format.</value>
-  </data>
   <data name="Error_IsNotA" xml:space="preserve">
     <value>'{0}' is not a {1}.</value>
   </data>
@@ -233,9 +230,6 @@
   </data>
   <data name="Error_ScaleoutQueuingConfig" xml:space="preserve">
     <value>Scaleout queuing is enabled but maximum queue size is 0</value>
-  </data>
-  <data name="Error_StateExceededMaximumLength" xml:space="preserve">
-    <value>State has exceeded the maximum length of 4096 bytes.</value>
   </data>
   <data name="Error_StreamClosed" xml:space="preserve">
     <value>The stream has been closed.</value>

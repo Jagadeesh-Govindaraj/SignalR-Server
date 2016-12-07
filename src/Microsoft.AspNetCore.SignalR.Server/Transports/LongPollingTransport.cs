@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.SignalR.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.AspNetCore.SignalR.Transports
 {
@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.SignalR.Transports
         private readonly IPerformanceCounterManager _counters;
         private bool _responseSent;
 
-        private static readonly byte[] _keepAlive = new byte[] { 32 };
+        private static readonly ArraySegment<byte> _keepAlive = new ArraySegment<byte>(new byte[] { 32 });
 
         public LongPollingTransport(HttpContext context,
                                     JsonSerializer jsonSerializer,
@@ -108,7 +108,7 @@ namespace Microsoft.AspNetCore.SignalR.Transports
         {
             var groupsToken = Context.Request.Query["groupsToken"];
 
-            if (groupsToken.Count > 0 && Context.Request.HasFormContentType)
+            if (groupsToken.Count == 0 && Context.Request.HasFormContentType)
             {
                 var form = await Context.Request.ReadFormAsync().PreserveCulture();
                 groupsToken = form["groupsToken"];
@@ -212,6 +212,12 @@ namespace Microsoft.AspNetCore.SignalR.Transports
 
         protected override async Task ProcessSendRequest()
         {
+            // Managed SignalR 2.x clients don't set content type which prevents from parsing the body as a form
+            if (string.IsNullOrEmpty(Context.Request.ContentType))
+            {
+                Context.Request.ContentType = FormContentType;
+            }
+
             var form = await Context.Request.ReadFormAsync().PreserveCulture();
             string data = (string)form["data"] ?? Context.Request.Query["data"];
 
@@ -219,6 +225,7 @@ namespace Microsoft.AspNetCore.SignalR.Transports
             {
                 await Received(data).PreserveCulture();
             }
+
         }
 
         private static Task WriteInit(LongPollingTransport transport)
@@ -236,7 +243,7 @@ namespace Microsoft.AspNetCore.SignalR.Transports
                 return TaskAsyncHelper.Empty;
             }
 
-            transport.Context.Response.Write(new ArraySegment<byte>(_keepAlive));
+            transport.Context.Response.Write(_keepAlive);
 
             return transport.Context.Response.Flush();
         }

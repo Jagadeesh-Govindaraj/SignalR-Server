@@ -33,8 +33,8 @@ namespace Microsoft.AspNetCore.SignalR.Hubs
             return _dependencyContext
                 .RuntimeLibraries
                 .Where(IsCandidateLibrary)
-                .SelectMany(l => l.Assemblies)
-                .Select(assembly => Assembly.Load(assembly.Name))
+                .SelectMany(l => l.GetDefaultAssemblyNames(_dependencyContext))
+                .Select(assembly => Assembly.Load(new AssemblyName(assembly.Name)))
                 .ToArray();
         }
 
@@ -42,5 +42,5 @@ namespace Microsoft.AspNetCore.SignalR.Hubs
         {
             return library.Dependencies.Any(dependency => string.Equals(AssemblyRoot, dependency.Name, StringComparison.Ordinal));
         }
-}
+    }
 }

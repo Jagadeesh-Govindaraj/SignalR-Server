@@ -32,3 +32,5 @@ project.lock.json
 runtimes/
 .build/
 .testPublish/
+launchSettings.json
+node_modules/
